@@ -1,0 +1,68 @@
+createUpdatePairFreq <- function(perm_list, pair_freq) {
+  for(i in 1:(length(perm_list)-1)){
+    pair <- paste0(perm_list[i], perm_list[i + 1])
+    if (is.null(pair_freq[[pair]])) {
+      pair_freq[pair] <- 1
+    }
+    else {
+      pair_freq[[pair]] <- pair_freq[[pair]] + 1
+    }
+  }
+  return(pair_freq)
+}
+createMovePermLists <- function(perm_df) {
+  move_perm_lists <-summarize(
+    group_by(perm_df[,c("TextFile", "Permutation")], TextFile), FeatureSequence = list(Permutation)
+  )
+  return(move_perm_lists)
+}
+createDisciplinePairFreqsList <- function (move_perm_lists_df, disciplines_list) {
+  discipline_pair_freqs <- list()
+  for(discipline_name in disciplines_list) {
+    single_discipline_df <- move_perm_lists_df[grep(discipline_name, move_perm_lists_df$TextFile), "FeatureSequence"]
+    PairFreq <- list()
+    for (abstract in single_discipline_df$FeatureSequence) {
+      PairFreq <- createUpdatePairFreq(abstract, PairFreq)
+    }
+    discipline_pair_freqs[[discipline_name]] <- PairFreq
+  }
+  return(discipline_pair_freqs)
+}
+createDisciplinePairFreqsMat <- function (freqs_list, disciplines_list) {
+  disciplines_list <- sort(disciplines_list)
+  adjacent_pairs <- c(
+    "IP", "IM", "IR", "ID", "PI", "PM", "PR", "PD", "MI", "MP",
+    "MR", "MD", "RI", "RP", "RM", "RD", "DI", "DP", "DM", "DR"
+  )
+  freq_mat <- matrix(
+    nrow = length(adjacent_pairs), ncol = length(disciplines_list), data = 0,
+    dimnames = list(adjacent_pairs, disciplines_list)
+  )
+  for (discipline_name in disciplines_list) {
+    for (pair in adjacent_pairs) {
+      if (!is.null(freqs_list[[discipline_name]][[pair]])) {
+        freq_mat[pair, discipline_name] <- freqs_list[[discipline_name]][[pair]]
+      }
+    }
+  }
+  return(freq_mat)
+}
+
+createMoveTransMats <- function (freq_mat, disciplines_list) {
+  disciplines_list <- sort(disciplines_list)
+  discipline_trans_mats <- list()
+  for (discipline_name in disciplines_list) {
+    disc_counts <- freq_mat[, discipline_name]
+    moves_list <- c("I", "P", "M", "R", "D")
+    trans_mat <- matrix(
+      nrow = length(moves_list), ncol = length(moves_list), data = 0,
+      dimnames = list(moves_list, moves_list)
+    )
+    for (move_pair in names(disc_counts)) {
+      move_pair_list <- unlist(strsplit(move_pair, ""))
+      trans_mat[move_pair_list[1], move_pair_list[2]] <- disc_counts[move_pair]
+    }
+    discipline_trans_mats[[discipline_name]] <- trans_mat
+  }
+  return(discipline_trans_mats)
+}
