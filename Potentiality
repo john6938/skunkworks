@@ -1,0 +1,29 @@
+createPotRealPermText <- function (move_perm_list_ds, colour, ln_break_count) {
+  counter <- 1
+  pot_real_perm_text <- ""
+  for (perm in permn(c("I", "P", "M", "R", "D"))) {
+    perm_text <- paste0(unlist(perm), collapse='')
+    found_perm <- FALSE
+    for (seq in move_perm_list_ds$FeatureSequence) {
+      if (paste0(unlist(seq), collapse='') == perm_text) {
+        found_perm <- TRUE
+        break
+      }
+    }
+    if (found_perm) {
+      pot_real_perm_text <- paste0(pot_real_perm_text, "\\color{", colour, "}{", perm_text, "}")
+    }
+    else {
+      pot_real_perm_text <- paste0(pot_real_perm_text, perm_text)
+    }
+    if (counter == ln_break_count) {
+      pot_real_perm_text <- paste0(pot_real_perm_text, " \\\\\n")
+      counter <- 1
+    }
+    else {
+      pot_real_perm_text <- paste0(pot_real_perm_text, " & ")
+      counter <- counter + 1
+    }
+  }
+  return(pot_real_perm_text)
+}
