@@ -1,0 +1,23 @@
+library(XML)
+library(stringr)
+library(dplyr)
+
+xml_path = "data/1000/"
+xml_files = list.files(paste(getwd(),xml_path, sep='/'),pattern = ".xml")
+
+source("data_funct.R")
+
+##### Compare and contrast features #####
+
+#  SNIPPET 1 - Read xml files into dataframe
+rawMasterDf = createRawMasterDf(xml_path, xml_files)
+
+#  SNIPPET 2 - Manipulating data (removing unnecessary columns and simplifying terms) 
+masterDf = createMasterDf(rawMasterDf)
+
+### SNIPPET 3 - Create feature only dataframe
+feature = masterDf[,-c(2)]
+
+### SNIPPET 4 - Create feature only dataframe
+feature_move = createFeatureMove(feature)
+feature_submove = createFeatureSubmove(feature)
