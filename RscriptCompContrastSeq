@@ -1,0 +1,58 @@
+library(XML)
+library(stringr)
+library(dplyr)
+
+xml_path = "data/1000/"
+xml_files = list.files(paste(getwd(),xml_path, sep='/'),pattern = ".xml")
+
+source("data_funct.R")
+
+##### Compare and contrast sequences #####
+
+#  SNIPPET 1 - Read xml files into dataframe
+rawMasterDf = createRawMasterDf(xml_path, xml_files)
+
+#  SNIPPET 2 - Manipulating data (removing unnecessary columns and simplifying terms) 
+masterDf = createMasterDf(rawMasterDf)
+
+
+### SNIPPET 3 - Create feature only dataframe
+feature = masterDf[,-c(2)]
+
+### SNIPPET 4 - Create feature only dataframe
+feature_move = createFeatureMove(feature)
+feature_submove = createFeatureSubmove(feature)
+
+
+## Merge feature move and submove dataframes into a single dataframe
+MasterPermutation <- cbind(feature_move, Submoves = feature_submove$Submoves)
+
+
+## SNIPPET 8 - Abbreviate feature permutations
+AbbreviatedPermutation = createAbbrPerm(MasterPermutation)
+
+## SNIPPET 9 - Merge sequential identical permutations  
+MergedPermutation = createMergePerm(AbbreviatedPermutation)
+
+## SNIPPET 10 - Omit submoves in permutations
+FiveMovePermutation = createFiveMovePermutation(AbbreviatedPermutation)
+
+## SNIPPET 11 - Omit submoves in permutations
+FourMovePermutation = createFourMovePermutation(FiveMovePermutation,MergedPermutation)
+
+## SNIIPET 12 = Increment count of permutation instances
+
+count_Abbr_Move = getcounts_Abbr_Move(AbbreviatedPermutation,FiveMovePermutation)
+count_Abbr = as.data.frame(count_Abbr_Move[1])
+count_Five = as.data.frame(count_Abbr_Move[2])
+
+# SNIPPET 13 - Increment linearity count
+linear_count_mrg = getLinearityCount(MergedPermutation)
+linear_count_Five = getLinearityCount(FiveMovePermutation)
+linear_count_Four = getLinearityCount(FourMovePermutation)
+
+
+# SNIPPET 14 - Increment cyclicity count
+linear_cycl_mrg = checkCyclicity(linear_count_mrg)
+linear_cycl_Five = checkCyclicity(linear_count_Five)
+linear_cycl_Four = checkCyclicity(linear_count_Four)
