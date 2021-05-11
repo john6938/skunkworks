@@ -1,0 +1,86 @@
+git clone git@github.com:JasperD-UGent/keyness-calculator.git
+
+os.chdir('keyness-calculator')
+
+from utils import init_keyness_calculator
+
+def get_keyness_pos(treebank_tag):
+    if treebank_tag.startswith('J'):
+        return "ADJ"
+    elif treebank_tag.startswith('V'):
+        return "VERB"
+    elif treebank_tag.startswith('N'):
+        return "NOUN"
+    elif treebank_tag.startswith('R'):
+        return "ADV"
+    else:
+        return
+
+def get_wordnet_pos(treebank_tag):
+    if treebank_tag.startswith('J'):
+        return wordnet.ADJ
+    elif treebank_tag.startswith('V'):
+        return wordnet.VERB
+    elif treebank_tag.startswith('N'):
+        return wordnet.NOUN
+    elif treebank_tag.startswith('R'):
+        return wordnet.ADV
+    else:
+        return ''
+
+def prep_keyness_text(txt, filter_punctuation=True):
+    tokens = WordPunctTokenizer().tokenize(txt)
+    tokens = pos_tag(tokens)
+    tokens = manual_pos_correction(tokens)
+    if filter_punctuation:
+        tok_filter = "°~!@#$%^&*()_+{}|:\"<>?`-=[]\;',./"
+        tokens = [tok for tok in tokens if tok[0] and tok[0][0] not in tok_filter]
+    lemmas = []
+    for tok in tokens:
+        wn_pos = get_wordnet_pos(tok[1])
+        if wn_pos:
+            lemmas.append(WordNetLemmatizer().lemmatize(tok[0], wn_pos))
+        else:
+            lemmas.append(WordNetLemmatizer().lemmatize(tok[0]))
+    return [(tok[0].lower(), get_keyness_pos(tok[1]), lemma.lower()) for tok, lemma in zip(tokens, lemmas)]
+
+def generate_keyness_data(disc_names, disc_text_df, metric="Ratio", pos=("NOUN", "ADJ", "VERB", "ADV"), per_move=False):
+    keyness_dictionary = dict()
+    input_rc = (
+        "RC_all_disciplines",
+        {
+            "RC_all_disc_corpus": [
+                prep_keyness_text(text) for text
+                in disc_text_df.groupby("AbstractName").Text.apply(" ".join)
+            ]
+        }
+    )
+    for discipline in disc_names:
+        if per_move:
+            filt = 'Move'
+            print("Generating Keyness statistics for {} move.".format(discipline))
+        else:
+            filt = 'Discipline'
+            print("Generating Keyness statistics for {} discipline.".format(discipline))
+        input_sc = (
+            "SC_{}".format(discipline),
+            {
+                "SC_{}_corpus".format(discipline): [
+                    prep_keyness_text(text) for text
+                    in disc_text_df[disc_text_df[filt] == discipline].groupby("AbstractName").Text.apply(" ".join)
+                ]
+            }
+        )
+        keyness_dictionary[discipline] = init_keyness_calculator(
+            input_sc, input_rc, keyness_metric=metric, desired_pos=pos
+        )
+    return keyness_dictionary
+
+disciplines = list(discipline_names.values())
+moves = ['introduction', 'purpose', 'method', 'result', 'discussion']
+
+disc_mv_sent_df = df[["Discipline", "AbstractName", "Move", "Text"]]
+del df
+
+keyness_disciplines_data = generate_keyness_data(disciplines, disc_mv_sent_df, pos=("ADV",))
+keyness_moves_data = generate_keyness_data(moves, disc_mv_sent_df, pos=("ADV",), per_move=True)
