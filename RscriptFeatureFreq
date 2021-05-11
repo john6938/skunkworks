@@ -1,0 +1,63 @@
+library(XML)
+library(stringr)
+library(dplyr)
+
+xml_path = "data/1000/"
+xml_files = list.files(paste(getwd(),xml_path, sep='/'),pattern = ".xml")
+
+source("data_funct.R")
+
+##### Feature Frequency #####
+
+#  SNIPPET 1 - Read xml files into dataframe
+rawMasterDf = createRawMasterDf(xml_path, xml_files)
+
+#  SNIPPET 2 - Manipulating data (removing unnecessary columns and simplifying terms) 
+masterDf = createMasterDf(rawMasterDf)
+
+# SNIPPET 5 - feature_submove
+
+# EC Discipline
+EC_discipline = masterDf[grep("EC",masterDf$TextFile),]
+
+# WC Discipline
+WC_discipline = masterDf[grep("WC",masterDf$TextFile),]
+
+# KDE Discipline
+KDE_discipline = masterDf[grep("KDE",masterDf$TextFile),]
+
+# IT Discipline
+IT_discipline = masterDf[grep("IT",masterDf$TextFile),]
+
+# IP Discipline
+IP_discipline = masterDf[grep("IP",masterDf$TextFile),]
+
+# BOT Discipline
+BOT_discipline = masterDf[grep("BOT",masterDf$TextFile),]
+
+# IND Discipline
+IND_discipline = masterDf[grep("IND",masterDf$TextFile),]
+
+# LING Discipline
+LING_discipline = masterDf[grep("LING",masterDf$TextFile),]
+
+# MAT Discipline
+MAT_discipline = masterDf[grep("MAT",masterDf$TextFile),]
+
+# MED Discipline
+MED_discipline = masterDf[grep("MED",masterDf$TextFile),]
+
+# SNIPPET 6 - : Increment count of feature instances 
+count_EC_discipline = count(EC_discipline,"Features")
+count_WC_discipline = count(WC_discipline,"Features")
+count_KDE_discipline = count(KDE_discipline,"Features")
+count_IT_discipline = count(IT_discipline,"Features")
+count_IP_discipline = count(IP_discipline,"Features")
+
+count_BOT_discipline = count(BOT_discipline,"Features")
+count_IND_discipline = count(IND_discipline,"Features")
+count_LING_discipline = count(LING_discipline,"Features")
+count_MAT_discipline = count(MAT_discipline,"Features")
+count_MED_discipline = count(MED_discipline,"Features")
+
+count_master = count(masterDf,"Features")
