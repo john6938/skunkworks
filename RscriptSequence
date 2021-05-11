@@ -1,0 +1,64 @@
+library(XML)
+library(stringr)
+library(dplyr)
+
+xml_path = "data/1000/"
+xml_files = list.files(paste(getwd(),xml_path, sep='/'),pattern = ".xml")
+
+source("data_funct.R")
+
+#### Sequence Frequency #####
+
+#  SNIPPET 1 - Read xml files into dataframe
+rawMasterDf = createRawMasterDf(xml_path, xml_files)
+
+#  SNIPPET 2 - Manipulating data (removing unnecessary columns and simplifying terms) 
+masterDf = createMasterDf(rawMasterDf)
+
+# SNIPPET 3 - Create feature only dataframe
+feature = masterDf[,-c(2)]
+
+# SNIPPET 4 - Create feature only dataframe
+feature_move = createFeatureMove(feature)
+feature_submove = createFeatureSubmove(feature)
+
+# Merge feature move and submove dataframes into a single dataframe
+MasterPermutation <- cbind(feature_move, Submoves = feature_submove$Submoves)
+
+# SNIPPET 8 - Abbreviate feature permutations
+AbbreviatedPermutation = createAbbrPerm(MasterPermutation)
+
+# SNIPPET 9 - Merge sequential identical permutations  
+MergedPermutation = createMergePerm(AbbreviatedPermutation)
+
+# SNIPPET 10 - Omit submoves in permutations
+FiveMovePermutation = createFiveMovePermutation(AbbreviatedPermutation)
+
+# SNIPPET 11 - Omit submoves in permutations
+FourMovePermutation = createFourMovePermutation(FiveMovePermutation,MergedPermutation)
+
+# SNIIPET 12 = Increament count of permutation instances
+
+count_Abbr_Move = getcounts_Abbr_Move(AbbreviatedPermutation,FiveMovePermutation)
+count_Abbr = as.data.frame(count_Abbr_Move[1])
+count_Five = as.data.frame(count_Abbr_Move[2])
+
+# Tabulate adjacent pairs of moves
+disciplines <- c("IP", "IT", "KDE", "WC", "EC", "BOT", "IND", "LING", "MAT", "MED")
+FiveMoveMergedPermutation <- createMergePerm(FiveMovePermutation)
+MovePermLists <- createMovePermLists(FiveMoveMergedPermutation)
+DisciplinePairFreqs <- createDisciplinePairFreqsList(MovePermLists, disciplines)
+DisciplinePairFreqsMat <- createDisciplinePairFreqsMat(DisciplinePairFreqs, disciplines)
+as.table(DisciplinePairFreqsMat)
+
+# Create heatmap table for adjacent pairs for each discipline
+MoveTransMats <- createMoveTransMats(DisciplinePairFreqsMat, disciplines)
+# https://cran.r-project.org/web/packages/ztable/vignettes/heatmapTable.html
+library(ztable)
+library(magrittr)
+options(ztable.type="html")
+for (trans_mat_name in names(MoveTransMats)) {
+  trans_mat <- MoveTransMats[[trans_mat_name]]
+  mode(trans_mat) <- "integer"
+  print(makeHeatmap(ztable(trans_mat)), caption=trans_mat_name)
+}
