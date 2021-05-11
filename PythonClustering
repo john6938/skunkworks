@@ -1,0 +1,87 @@
+import numpy as np
+from sklearn.preprocessing import normalize
+from sklearn.cluster import k_means
+from sklearn.manifold import MDS
+
+def get_keyness_features(categories_list, keyness_dict):
+    keyness_disc_dict = {}
+    for disc in categories_list:
+        keyness_disc_dict[disc] = {
+            tok_keyness['item'][0]: tok_keyness['keyness'] for tok_keyness in keyness_dict[disc]['all']
+        }
+
+    disc_tok_intersection = set.intersection(*[set(keyness_disc.keys()) for keyness_disc in keyness_disc_dict.values()])
+
+    keyness_features = np.zeros([len(categories_list), len(disc_tok_intersection)])
+    for disc_idx, disc in enumerate(categories_list):
+        for tok_idx, tok in enumerate(disc_tok_intersection):
+            keyness_features[disc_idx, tok_idx] = keyness_disc_dict[disc][tok]
+    return normalize(keyness_features)
+
+def plot_clusters_scatter(features, four_cluster_groups, disc_names, title, filename=None):
+    colors = ['red', 'green', 'blue', 'yellow']
+
+    embedding = MDS(n_components=2, random_state=0)
+    mds_embedding = embedding.fit_transform(features)
+
+    fig, ax = plt.subplots()
+    ax.grid()
+    ax.set_title(title)
+    ax.set_xlabel("Dim. 1")
+    ax.set_ylabel("Dim. 2")
+    x_offset = 0.08 * (np.max(mds_embedding[:, 0]) - np.min(mds_embedding[:, 0]))
+    y_offset = 0.08 * (np.max(mds_embedding[:, 1]) - np.min(mds_embedding[:, 1]))
+    for idx, disc in enumerate(disc_names):
+        ax.scatter(mds_embedding[idx, 0], mds_embedding[idx, 1], color=colors[four_cluster_groups[idx]])
+        ax.annotate(
+            disc, (mds_embedding[idx, 0], mds_embedding[idx, 1]),
+            xytext=(mds_embedding[idx, 0]+x_offset, mds_embedding[idx, 1]-y_offset),
+            arrowprops = dict(arrowstyle="-", connectionstyle="angle3,angleA=0,angleB=-90")
+        )
+    if filename is not None:
+        fig.savefig(filename)
+    fig.show()
+    
+disc_keyness_features = get_keyness_features(disciplines, keyness_disciplines_data)
+print("Number of Keywords: {}".format(disc_keyness_features.shape[1]))
+k_groups = k_means(disc_keyness_features, 4, random_state=0)[1]
+print(k_groups)
+fname = "disc_keyness_clusters.png"
+scatterplot_title = 'Disciplines in Keyness Feature space'
+plot_clusters_scatter(disc_keyness_features, k_groups, disciplines, scatterplot_title, filename=fname)
+
+tense_features = normalize(np.transpose(tense_disc_counts.to_numpy()))
+t_groups = k_means(tense_features, 4, random_state=0)[1]
+print(t_groups)
+fname = "disc_tense_clusters.png"
+scatterplot_title = 'Disciplines in Tense Feature space'
+plot_clusters_scatter(tense_features, t_groups, disciplines, scatterplot_title, filename=fname)
+
+tense_keyness_features = normalize(np.concatenate((tense_features, disc_keyness_features), axis=1))
+tk_groups = k_means(tense_keyness_features, 4, random_state=0)[1]
+print(tk_groups)
+fname = "disc_tense_keyness_clusters.png"
+scatterplot_title = 'Disciplines in Tense & Keyness Feature space'
+plot_clusters_scatter(tense_keyness_features, tk_groups, disciplines, scatterplot_title, filename=fname)
+
+move_keyness_features = get_keyness_features(moves, keyness_moves_data)
+print("Number of Keywords: {}".format(move_keyness_features.shape[1]))
+k_groups = k_means(move_keyness_features, 4, random_state=0)[1]
+print(k_groups)
+fname = "move_keyness_clusters.png"
+scatterplot_title = 'Moves in Keyness Feature space'
+plot_clusters_scatter(move_keyness_features, k_groups, moves, scatterplot_title, filename=fname)
+
+tense_features = normalize(np.transpose(tense_move_counts.to_numpy()))
+t_groups = k_means(tense_features, 4, random_state=0)[1]
+print(t_groups)
+fname = "move_tense_clusters.png"
+scatterplot_title = 'Moves in Tense Feature space'
+plot_clusters_scatter(tense_features, t_groups, moves, scatterplot_title, filename=fname)
+
+tense_keyness_features = normalize(np.concatenate((tense_features, move_keyness_features), axis=1))
+tk_groups = k_means(tense_keyness_features, 4, random_state=0)[1]
+print(tk_groups)
+fname = "move_tense_keyness_clusters.png"
+scatterplot_title = 'Moves in Tense & Keyness Feature space'
+plot_clusters_scatter(tense_keyness_features, tk_groups, moves, scatterplot_title, filename=fname)
