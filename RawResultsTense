@@ -1,0 +1,335 @@
+introduction BOT
+Tense
+Present Simple            153
+Past Simple                21
+Present Perfect Simple     13
+Name: Tense, dtype: int64 
+
+introduction EC
+Tense
+Present Simple            163
+Present Perfect Simple     43
+Future Simple              15
+Name: Tense, dtype: int64 
+
+introduction IND
+Tense
+Present Simple            89
+Present Perfect Simple    12
+Future Perfect Simple      9
+Name: Tense, dtype: int64 
+
+introduction IP
+Tense
+Present Simple            119
+Present Perfect Simple     22
+Future Simple               9
+Name: Tense, dtype: int64 
+
+introduction IT
+Tense
+Present Simple            57
+Past Simple                9
+Present Perfect Simple     9
+Name: Tense, dtype: int64 
+
+introduction KDE
+Tense
+Present Simple            178
+Present Perfect Simple     38
+Future Simple              12
+Name: Tense, dtype: int64 
+
+introduction LING
+Tense
+Present Simple            70
+Present Perfect Simple    18
+Future Simple              5
+Name: Tense, dtype: int64 
+
+introduction MAT
+Tense
+Present Simple    11
+Name: Tense, dtype: int64 
+
+introduction MED
+NO TENSES
+introduction WC
+Tense
+Present Simple            81
+Present Perfect Simple    14
+Future Simple             11
+Name: Tense, dtype: int64 
+
+purpose BOT
+Tense
+Present Simple    8
+Past Simple       5
+Name: Tense, dtype: int64 
+
+purpose EC
+Tense
+Present Simple    48
+Future Simple      3
+Past Simple        2
+Name: Tense, dtype: int64 
+
+purpose IND
+Tense
+Present Simple            76
+Past Simple                4
+Present Perfect Simple     1
+Name: Tense, dtype: int64 
+
+purpose IP
+Tense
+Present Simple    25
+Future Simple      1
+Name: Tense, dtype: int64 
+
+purpose IT
+Tense
+Present Simple            63
+Present Perfect Simple     2
+Future Simple              1
+Name: Tense, dtype: int64 
+
+purpose KDE
+Tense
+Present Simple    37
+Future Simple      1
+Name: Tense, dtype: int64 
+
+purpose LING
+Tense
+Present Simple    64
+Past Simple       19
+Future Simple      2
+Name: Tense, dtype: int64 
+
+purpose MAT
+Tense
+Present Simple    6
+Name: Tense, dtype: int64 
+
+purpose MED
+Tense
+Present Simple    24
+Past Simple       12
+Future Simple      7
+Name: Tense, dtype: int64 
+
+purpose WC
+Tense
+Present Simple    52
+Name: Tense, dtype: int64 
+
+method BOT
+Tense
+Past Simple               22
+Present Simple             5
+Present Perfect Simple     1
+Name: Tense, dtype: int64 
+
+method EC
+Tense
+Present Simple            191
+Past Simple                17
+Present Perfect Simple     11
+Name: Tense, dtype: int64 
+
+method IND
+Tense
+Present Simple            119
+Past Simple                12
+Present Perfect Simple      9
+Name: Tense, dtype: int64 
+
+method IP
+Tense
+Present Simple           232
+Future Perfect Simple     13
+Past Simple               12
+Name: Tense, dtype: int64 
+
+method IT
+Tense
+Present Simple           188
+Past Simple                7
+Future Perfect Simple      3
+Name: Tense, dtype: int64 
+
+method KDE
+Tense
+Present Simple           192
+Past Simple               17
+Future Perfect Simple      6
+Name: Tense, dtype: int64 
+
+method LING
+Tense
+Past Simple              56
+Present Simple           28
+Future Perfect Simple     1
+Name: Tense, dtype: int64 
+
+method MAT
+Tense
+Present Simple           24
+Past Simple               4
+Future Perfect Simple     2
+Name: Tense, dtype: int64 
+
+method MED
+Tense
+Past Simple            252
+Present Simple          40
+Past Perfect Simple     22
+Name: Tense, dtype: int64 
+
+method WC
+Tense
+Present Simple           209
+Future Perfect Simple      5
+Future Simple              4
+Name: Tense, dtype: int64 
+
+result BOT
+Tense
+Present Simple         210
+Past Simple            202
+Past Perfect Simple      7
+Name: Tense, dtype: int64 
+
+result EC
+Tense
+Present Simple            172
+Past Simple                12
+Present Perfect Simple      6
+Name: Tense, dtype: int64 
+
+result IND
+Tense
+Present Simple           203
+Past Simple               24
+Future Perfect Simple     21
+Name: Tense, dtype: int64 
+
+result IP
+Tense
+Present Simple    221
+Past Simple        12
+Future Simple       9
+Name: Tense, dtype: int64 
+
+result IT
+Tense
+Present Simple           201
+Past Simple               10
+Future Perfect Simple      5
+Name: Tense, dtype: int64 
+
+result KDE
+Tense
+Present Simple            212
+Past Simple                17
+Present Perfect Simple     11
+Name: Tense, dtype: int64 
+
+result LING
+Tense
+Past Simple       114
+Present Simple    103
+Future Simple       3
+Name: Tense, dtype: int64 
+
+result MAT
+Tense
+Present Simple           135
+Past Simple               28
+Future Perfect Simple      7
+Name: Tense, dtype: int64 
+
+result MED
+Tense
+Past Simple            440
+Present Simple          24
+Past Perfect Simple      9
+Name: Tense, dtype: int64 
+
+result WC
+Tense
+Present Simple    203
+Past Simple         8
+Future Simple       4
+Name: Tense, dtype: int64 
+
+discussion BOT
+Tense
+Present Simple    93
+Past Simple       23
+Future Simple      4
+Name: Tense, dtype: int64 
+
+discussion EC
+Tense
+Present Simple    33
+Future Simple      8
+Past Simple        1
+Name: Tense, dtype: int64 
+
+discussion IND
+Tense
+Present Simple           19
+Future Perfect Simple     3
+Future Simple             3
+Name: Tense, dtype: int64 
+
+discussion IP
+Tense
+Present Simple            6
+Future Perfect Simple     1
+Present Perfect Simple    1
+Name: Tense, dtype: int64 
+
+discussion IT
+Tense
+Present Simple           28
+Future Perfect Simple     4
+Future Simple             2
+Name: Tense, dtype: int64 
+
+discussion KDE
+Tense
+Present Simple           22
+Future Perfect Simple     2
+Future Simple             2
+Name: Tense, dtype: int64 
+
+discussion LING
+Tense
+Present Simple    31
+Future Simple      3
+Past Simple        3
+Name: Tense, dtype: int64 
+
+discussion MAT
+Tense
+Present Simple    19
+Future Simple      4
+Past Simple        2
+Name: Tense, dtype: int64 
+
+discussion MED
+Tense
+Present Simple    94
+Past Simple       49
+Future Simple     32
+Name: Tense, dtype: int64 
+
+discussion WC
+Tense
+Present Simple               19
+Future Perfect Continuous     1
+Future Simple                 1
+Name: Tense, dtype: int64 
