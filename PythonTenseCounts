@@ -1,0 +1,116 @@
+import os
+from xml.dom.minidom import parse as parse_xml
+
+import pandas as pd
+import matplotlib.pyplot as plt
+from nltk import WordPunctTokenizer, pos_tag
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import wordnet
+
+from black.black_task import get_tense_verb_groups, manual_pos_correction
+
+dataset_path = "..."
+
+def extract_segments(folder_path, file_name):
+    file_path = os.path.join(folder_path, file_name)
+    raw_segments = parse_xml(file_path).getElementsByTagName("segment")
+    segments_list = []
+    for segment in raw_segments:
+        sentence = segment.firstChild.data
+        features = segment.attributes["features"].firstChild.data
+        idx = segment.attributes["id"].firstChild.data
+        move_submove = features.split(";")[1:]
+        if len(move_submove) == 1:
+            move, submove = move_submove[0], None
+        else:
+            move, submove = move_submove
+        segments_list.append((idx, move, submove, sentence))
+    return segments_list
+
+discipline_names = {
+    "Bot_": "BOT",
+    "Tr_on_EvolutionaryComp_": "EC",
+    "IE_": "IND",
+    "Tr_on_ImageProcess_": "IP",
+    "Tr_on_In_Th_": "IT",
+    "Tr_on_Know&DataEng_": "KDE",
+    "Ling_": "LING",
+    "Mat_":"MAT",
+    "Med_": "MED",
+    "Tr_on_WirelessComm_": "WC",
+}
+def get_discipline(abstract_name):
+    for discipline_file_name, discipline_name in discipline_names.items():
+        if discipline_file_name in abstract_name:
+            return discipline_name
+    return None
+
+def get_sent_tense(sent_txt, verbose=True):
+    tense_verb_groups = get_tense_verb_groups(sent_txt, verbose=verbose)
+    final_verbs = []
+    for verb_group in tense_verb_groups:
+        valid_verbs = [verb for verb in verb_group if len(verb) == 5]  # verbs with a classified tense only
+        if valid_verbs:
+            tree_depth = valid_verbs[0][4]
+            nb_aux = tree_depth - 1
+            nb_main = len(valid_verbs) - nb_aux
+            # split verbs into auxiliary and main, remove the tree depth information
+            # resulting format: ('verb', 'POS', ['L span', 'R span'], 'tense')
+            aux_verbs = [verb[:4] for verb in valid_verbs[:nb_aux]]
+            main_verbs = [verb[:4] for verb in valid_verbs[-nb_main:]]
+            final_verbs.extend(aux_verbs)
+            final_verbs.extend(main_verbs)
+    first_vb_tense = final_verbs[0][3] if final_verbs else None
+    return first_vb_tense
+
+tense_dictionary = {
+    'futuperfsimp': 'Future Perfect Simple',
+    'futucont': 'Future Continuous',
+    'futuperfcont': 'Future Perfect Continuous',
+    'futusimp': 'Future Simple',
+    'pastcont': 'Past Continuous',
+    'pastperfcont': 'Past Perfect Continuous',
+    'pastperfsimp': 'Past Perfect Simple',
+    'pastsimp': 'Past Simple',
+    'pastsimppass': 'Past Simple',
+    'prescont': 'Present Continuous',
+    'prescontpass': 'Present Continuous',
+    'presperfcont': 'Present Perfect Continuous',
+    'presperfsimp': 'Present Perfect Simple',
+    'pressimp': 'Present Simple',
+    'pressimppass': 'Present Simple',
+    None: None
+}
+
+def dataset_segment_iterator(ds_path, filter_punctuation=True):
+    for f_name in os.listdir(ds_path):
+        abstract_name = f_name.split('.')[0]
+        segments = extract_segments(ds_path, f_name)
+        discipline = get_discipline(abstract_name)
+        for segment in segments:
+            sent_text = segment[3]
+            tok_filter = "°~!@#$%^&*()_+{}|:\"<>?`-=[]\;',./"
+            if filter_punctuation:
+                sent_len = len([tok for tok in WordPunctTokenizer().tokenize(sent_text) if tok not in tok_filter])
+            else:
+                sent_len = len(WordPunctTokenizer().tokenize(sent_text))
+            sent_tense = tense_dictionary[get_sent_tense(sent_text, verbose=False)]
+            yield {
+                'AbstractName': abstract_name,
+                'Discipline': discipline,
+                'SentenceID': segment[0],
+                'Move': segment[1],
+                'Submove': segment[2],
+                'Tense': sent_tense,
+                'SentenceLength': sent_len,
+                'Text': sent_text,
+            }
+
+df = pd.DataFrame(
+    [seg for seg in dataset_segment_iterator(dataset_path, filter_punctuation=True)]
+
+tense_disc_counts = df.groupby("Discipline").Tense.value_counts()
+tense_disc_counts = tense_disc_counts.to_frame().unstack(fill_value=0).transpose()
+print(tense_disc_counts.to_latex())
+tense_disc_counts
+)
