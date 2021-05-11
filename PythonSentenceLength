@@ -1,0 +1,20 @@
+disc_avg_med = pd.DataFrame(columns=["Mean", "Median"])
+disc_avg_med.Mean = df.groupby('Discipline').mean('SentenceLength')['SentenceLength'].round(0).astype(int)
+disc_avg_med.Median = df.groupby('Discipline').median('SentenceLength')['SentenceLength'].astype(int)
+disc_avg_med = disc_avg_med.transpose()
+
+first_disc_avg_med = disc_avg_med.loc[:,"BOT":"IT"]
+print(first_disc_avg_med.to_latex())
+first_disc_avg_med
+
+second_disc_avg_med = disc_avg_med.loc[:,"KDE":"WC"]
+print(second_disc_avg_med.to_latex())
+second_disc_avg_med
+
+show_outliers = False
+axes = df.boxplot('SentenceLength', rot=45, by='Discipline', showfliers=show_outliers)
+boxplot_title = 'Sentence Length'
+plt.title(boxplot_title)
+plt.suptitle('')
+plt.savefig("sentence_lengths_box.png")
+plt.show()
